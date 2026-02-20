@@ -3,40 +3,47 @@
 <head>
 <title>School Store</title>
 <style>
-body { font-family: Arial, sans-serif; margin: 20px; }
-h1,h2 { color: #333; }
-button { margin-left: 10px; }
-ul { list-style-type: none; padding: 0; }
-li { margin: 5px 0; }
-#payNow { margin-top: 10px; background-color: #4CAF50; color: white; padding: 10px; border: none; cursor: pointer; }
+body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+h1,h2 { color: #333; text-align:center; }
+input { padding: 8px; font-size:16px; }
+button { margin-left: 10px; padding:8px 12px; font-size:14px; cursor:pointer; }
+#payNow { margin-top: 20px; background-color: #4CAF50; color: white; padding: 12px 20px; border: none; cursor: pointer; font-size:16px; display:block; width:100%; }
 #payNow:hover { background-color: #45a049; }
+.container { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; margin-top:20px; }
+.card { background:white; padding:20px; width:220px; text-align:center; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius:8px; }
+.card img { width:150px; height:150px; object-fit:cover; margin-bottom:10px; border-radius:8px; }
+.card button { margin-top:10px; width:100%; }
+.subtotal { text-align:right; margin-top:10px; font-weight:bold; font-size:16px; }
 </style>
 </head>
 <body>
 <h1>School Store</h1>
 
-<label>Phone Number: <input type="text" id="phone" /></label>
+<div style="text-align:center;">
+<label>Phone Number: <input type="text" id="phone" placeholder="Enter phone number"/></label>
 <button onclick="login()">Login</button>
+</div>
 
 <h2>Products</h2>
-<ul id="products"></ul>
+<div id="products" class="container"></div>
 
 <h2>Cart</h2>
-<ul id="cart"></ul>
+<div id="cart" class="container"></div>
+<div id="subtotal" class="subtotal"></div>
 
 <button id="payNow" onclick="payNow()">Pay Now</button>
 
 <script>
-// Products
+// Products with sample images (free image URLs)
 const products = [
-    {id:1,name:"Shirt",price:400},
-    {id:2,name:"T-Shirt",price:3000},
-    {id:3,name:"Panta",price:400},
-    {id:4,name:"Trouser",price:4000},
-    {id:5,name:"Watch",price:400},
-    {id:6,name:"Pen",price:100},
-    {id:7,name:"Books",price:3000},
-    {id:8,name:"Band",price:300}
+    {id:1,name:"Shirt",price:400,img:"https://via.placeholder.com/150?text=Shirt"},
+    {id:2,name:"T-Shirt",price:3000,img:"https://via.placeholder.com/150?text=T-Shirt"},
+    {id:3,name:"Panta",price:400,img:"https://via.placeholder.com/150?text=Panta"},
+    {id:4,name:"Trouser",price:4000,img:"https://via.placeholder.com/150?text=Trouser"},
+    {id:5,name:"Watch",price:400,img:"https://via.placeholder.com/150?text=Watch"},
+    {id:6,name:"Pen",price:100,img:"https://via.placeholder.com/150?text=Pen"},
+    {id:7,name:"Books",price:3000,img:"https://via.placeholder.com/150?text=Books"},
+    {id:8,name:"Band",price:300,img:"https://via.placeholder.com/150?text=Band"}
 ];
 
 // State
@@ -55,16 +62,17 @@ function login(){
 
 // Load Products
 function loadProducts(){
-    const ul = document.getElementById('products');
-    ul.innerHTML='';
+    const container = document.getElementById('products');
+    container.innerHTML='';
     products.forEach(p=>{
-        const li = document.createElement('li');
-        li.textContent = `${p.name} - ₹${p.price}`;
+        const div = document.createElement('div');
+        div.className='card';
+        div.innerHTML = `<img src="${p.img}" alt="${p.name}"><strong>${p.name}</strong><br>Price: ₹${p.price}`;
         const btn = document.createElement('button');
         btn.textContent='Add to Cart';
         btn.onclick=()=>addToCart(p.id);
-        li.appendChild(btn);
-        ul.appendChild(li);
+        div.appendChild(btn);
+        container.appendChild(div);
     });
 }
 
@@ -77,23 +85,32 @@ function addToCart(id){
 
 // Load Cart
 function loadCart(){
-    const ul = document.getElementById('cart');
-    ul.innerHTML='';
+    const container = document.getElementById('cart');
+    container.innerHTML='';
     carts[currentPhone].forEach((p,index)=>{
-        const li = document.createElement('li');
-        li.textContent = `${p.name} - ₹${p.price}`;
+        const div = document.createElement('div');
+        div.className='card';
+        div.innerHTML = `<img src="${p.img}" alt="${p.name}"><strong>${p.name}</strong><br>Price: ₹${p.price}`;
         const btn = document.createElement('button');
         btn.textContent='Remove';
         btn.onclick=()=>removeFromCart(index);
-        li.appendChild(btn);
-        ul.appendChild(li);
+        div.appendChild(btn);
+        container.appendChild(div);
     });
+    updateSubtotal();
 }
 
 // Remove from Cart
 function removeFromCart(index){
     carts[currentPhone].splice(index,1);
     loadCart();
+}
+
+// Update Subtotal
+function updateSubtotal(){
+    const subtotalDiv = document.getElementById('subtotal');
+    const total = carts[currentPhone].reduce((sum,p)=>sum+p.price,0);
+    subtotalDiv.textContent = `Subtotal: ₹${total}`;
 }
 
 // Fake Pay Now
