@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>School Store</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; }
+h1,h2 { color: #333; }
+button { margin-left: 10px; }
+ul { list-style-type: none; padding: 0; }
+li { margin: 5px 0; }
+#payNow { margin-top: 10px; background-color: #4CAF50; color: white; padding: 10px; border: none; cursor: pointer; }
+#payNow:hover { background-color: #45a049; }
+</style>
+</head>
+<body>
+<h1>School Store</h1>
+
+<label>Phone Number: <input type="text" id="phone" /></label>
+<button onclick="login()">Login</button>
+
+<h2>Products</h2>
+<ul id="products"></ul>
+
+<h2>Cart</h2>
+<ul id="cart"></ul>
+
+<button id="payNow" onclick="payNow()">Pay Now</button>
+
+<script>
+// Products
+const products = [
+    {id:1,name:"Shirt",price:400},
+    {id:2,name:"T-Shirt",price:3000},
+    {id:3,name:"Panta",price:400},
+    {id:4,name:"Trouser",price:4000},
+    {id:5,name:"Watch",price:400},
+    {id:6,name:"Pen",price:100},
+    {id:7,name:"Books",price:3000},
+    {id:8,name:"Band",price:300}
+];
+
+// State
+let currentPhone = '';
+let carts = {}; // phone -> cart array
+
+// Login
+function login(){
+    currentPhone = document.getElementById('phone').value.trim();
+    if(!currentPhone){ alert("Enter phone number"); return; }
+    if(!carts[currentPhone]) carts[currentPhone] = [];
+    loadProducts();
+    loadCart();
+    alert("Logged in as " + currentPhone);
+}
+
+// Load Products
+function loadProducts(){
+    const ul = document.getElementById('products');
+    ul.innerHTML='';
+    products.forEach(p=>{
+        const li = document.createElement('li');
+        li.textContent = `${p.name} - ₹${p.price}`;
+        const btn = document.createElement('button');
+        btn.textContent='Add to Cart';
+        btn.onclick=()=>addToCart(p.id);
+        li.appendChild(btn);
+        ul.appendChild(li);
+    });
+}
+
+// Add to Cart
+function addToCart(id){
+    const product = products.find(p=>p.id===id);
+    carts[currentPhone].push(product);
+    loadCart();
+}
+
+// Load Cart
+function loadCart(){
+    const ul = document.getElementById('cart');
+    ul.innerHTML='';
+    carts[currentPhone].forEach((p,index)=>{
+        const li = document.createElement('li');
+        li.textContent = `${p.name} - ₹${p.price}`;
+        const btn = document.createElement('button');
+        btn.textContent='Remove';
+        btn.onclick=()=>removeFromCart(index);
+        li.appendChild(btn);
+        ul.appendChild(li);
+    });
+}
+
+// Remove from Cart
+function removeFromCart(index){
+    carts[currentPhone].splice(index,1);
+    loadCart();
+}
+
+// Fake Pay Now
+function payNow(){
+    if(!carts[currentPhone] || carts[currentPhone].length===0){ 
+        alert("Cart is empty"); 
+        return; 
+    }
+    const total = carts[currentPhone].reduce((sum,p)=>sum+p.price,0);
+    alert(`Payment Successful!\nTotal Paid: ₹${total}\nThis is a simulated payment.`);
+    carts[currentPhone] = [];
+    loadCart();
+}
+
+// Initialize
+loadProducts();
+</script>
+</body>
+</html>
