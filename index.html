@@ -121,7 +121,7 @@ function renderCart(){
 function payNow(){
   if(cart.length===0){ alert('Cart is empty'); return; }
   const subtotal = cart.reduce((sum,i)=>sum+i.price,0);
-  const upiLink = `upi://pay?pa=9667200280@FAM&pn=StoreOwner&am=${subtotal}&cu=INR`;
+  const upiLink = `upi://pay?pa=9667200280@fam&pn=StoreOwner&am=${subtotal}&cu=INR`;
   window.location.href = upiLink;
 }
 
